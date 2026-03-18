@@ -39,7 +39,7 @@ export default function TicketScanner({
       controlsRef.current = await reader.decodeFromVideoDevice(
         undefined,
         videoRef.current,
-        async (scanResult, err) => {
+        async (scanResult, _err) => {
           if (!scanResult || processing) return;
           const text = scanResult.getText();
           // Debounce — don't re-scan same ticket within 3s

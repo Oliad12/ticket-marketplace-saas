@@ -6,6 +6,8 @@ import { useQuery, useMutation } from "convex/react";
 import { useState } from "react";
 import { Plus, Trash2, Edit2, Check, X } from "lucide-react";
 
+type FormState = { name: string; price: string; totalQuantity: string; description: string };
+
 export default function TicketTypeManager({ eventId, currency }: { eventId: Id<"events">; currency?: string }) {
   const types = useQuery(api.ticketTypes.getByEvent, { eventId });
   const createType = useMutation(api.ticketTypes.create);
@@ -16,7 +18,7 @@ export default function TicketTypeManager({ eventId, currency }: { eventId: Id<"
 
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<Id<"ticketTypes"> | null>(null);
-  const [form, setForm] = useState({ name: "", price: "", totalQuantity: "", description: "" });
+  const [form, setForm] = useState<FormState>({ name: "", price: "", totalQuantity: "", description: "" });
 
   const resetForm = () => {
     setForm({ name: "", price: "", totalQuantity: "", description: "" });
@@ -99,8 +101,8 @@ export default function TicketTypeManager({ eventId, currency }: { eventId: Id<"
 }
 
 function TypeForm({ form, setForm, symbol, onSave, onCancel }: {
-  form: { name: string; price: string; totalQuantity: string; description: string };
-  setForm: (f: any) => void;
+  form: FormState;
+  setForm: (f: FormState | ((prev: FormState) => FormState)) => void;
   symbol: string;
   onSave: () => void;
   onCancel: () => void;
@@ -109,20 +111,20 @@ function TypeForm({ form, setForm, symbol, onSave, onCancel }: {
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-2">
         <input placeholder="Name (e.g. VIP)" value={form.name}
-          onChange={(e) => setForm((f: any) => ({ ...f, name: e.target.value }))}
+          onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
           className="border border-gray-300 rounded px-2 py-1.5 text-sm w-full" />
         <div className="relative">
           <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-500">{symbol}</span>
           <input type="number" placeholder="Price" value={form.price}
-            onChange={(e) => setForm((f: any) => ({ ...f, price: e.target.value }))}
+            onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
             className="border border-gray-300 rounded pl-8 pr-2 py-1.5 text-sm w-full" />
         </div>
       </div>
       <input type="number" placeholder="Total quantity" value={form.totalQuantity}
-        onChange={(e) => setForm((f: any) => ({ ...f, totalQuantity: e.target.value }))}
+        onChange={(e) => setForm((f) => ({ ...f, totalQuantity: e.target.value }))}
         className="border border-gray-300 rounded px-2 py-1.5 text-sm w-full" />
       <input placeholder="Description (optional)" value={form.description}
-        onChange={(e) => setForm((f: any) => ({ ...f, description: e.target.value }))}
+        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
         className="border border-gray-300 rounded px-2 py-1.5 text-sm w-full" />
       <div className="flex gap-2 justify-end">
         <button onClick={onCancel} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"><X className="w-4 h-4" /> Cancel</button>

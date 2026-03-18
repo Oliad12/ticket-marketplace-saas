@@ -1,3 +1,6 @@
+# ticket-marketplace-saas
+A ticket marketplace SaaS for Ethiopia with event categories, multiple ticket types, and a resale system. Features secure Chapa payments, QR tickets, email notifications, and real-time ticket management. Built with Next.js, Convex, Clerk, and optional Stripe.
+
 # Ticketr — Ethiopian Event Ticketing Platform
 
 A full-stack, real-time event ticketing platform built for the Ethiopian market. Supports Chapa (ETB) as the primary payment method and Stripe as an optional international payment option. Built with Next.js 15, Convex, Clerk, and Tailwind CSS.
