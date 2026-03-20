@@ -48,8 +48,8 @@ export default function PurchaseTicket({ eventId }: { eventId: Id<"events"> }) {
       setIsLoading("stripe");
       const { sessionUrl } = await createStripeCheckoutSession({ eventId });
       if (sessionUrl) router.push(sessionUrl);
-    } catch (error: any) {
-      setStripeError(error?.message ?? "Stripe payment unavailable for this event.");
+    } catch (error) {
+      setStripeError(error instanceof Error ? error.message : "Stripe payment unavailable for this event.");
     } finally {
       setIsLoading(null);
     }

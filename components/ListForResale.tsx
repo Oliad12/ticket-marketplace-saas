@@ -31,8 +31,8 @@ export default function ListForResale({ ticketId, eventId }: { ticketId: Id<"tic
       await listForResale({ ticketId, sellerId: user.id, price: Number(price) });
       setShowing(false);
       setPrice("");
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -43,8 +43,8 @@ export default function ListForResale({ ticketId, eventId }: { ticketId: Id<"tic
     setLoading(true);
     try {
       await cancelListing({ listingId: activeListing._id, userId: user.id });
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
     }

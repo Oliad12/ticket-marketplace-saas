@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { verifyChapaPayment } from "@/lib/chapa";
 import { Id } from "@/convex/_generated/dataModel";
 import Ticket from "@/components/Ticket";
+import Link from "next/link";
 
 async function TicketSuccess({
   searchParams,
@@ -71,14 +72,14 @@ async function TicketSuccess({
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Processing</h1>
           <p className="text-gray-600 mb-6">
             Your Chapa payment is being confirmed. Your ticket will appear in{" "}
-            <a href="/tickets" className="text-blue-600 underline">My Tickets</a> shortly.
+            <Link href="/tickets" className="text-blue-600 underline">My Tickets</Link> shortly.
           </p>
-          <a
+          <Link
             href="/tickets"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Go to My Tickets
-          </a>
+          </Link>
         </div>
       </div>
     );

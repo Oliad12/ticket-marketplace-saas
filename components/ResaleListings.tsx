@@ -28,8 +28,8 @@ export default function ResaleListings({ eventId }: { eventId: Id<"events"> }) {
         paymentProvider: "chapa",
       });
       alert("Ticket transferred to your account!");
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "An error occurred");
     } finally {
       setLoading(null);
     }
