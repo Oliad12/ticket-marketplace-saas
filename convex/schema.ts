@@ -31,6 +31,8 @@ export default defineSchema({
       v.literal("other")
     )),
     isFeatured: v.optional(v.boolean()),
+    status: v.optional(v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected"))),
+    adminNote: v.optional(v.string()),
   }).index("by_category", ["category"]),
 
   ticketTypes: defineTable({
@@ -102,7 +104,21 @@ export default defineSchema({
     email: v.string(),
     userId: v.string(),
     stripeConnectId: v.optional(v.string()),
+    isBanned: v.optional(v.boolean()),
+    banReason: v.optional(v.string()),
   })
     .index("by_user_id", ["userId"])
     .index("by_email", ["email"]),
+
+  reports: defineTable({
+    reportedBy: v.string(),       // userId of reporter
+    targetType: v.union(v.literal("event"), v.literal("user"), v.literal("ticket")),
+    targetId: v.string(),
+    reason: v.string(),
+    status: v.union(v.literal("open"), v.literal("resolved"), v.literal("dismissed")),
+    adminNote: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_target", ["targetType", "targetId"]),
 });

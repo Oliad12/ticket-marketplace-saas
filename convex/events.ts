@@ -579,3 +579,22 @@ export const cancelEvent = mutation({
     return { success: true };
   },
 });
+
+/** Get featured events (isFeatured = true, upcoming, not cancelled) */
+export const getFeatured = query({
+  args: {},
+  handler: async (ctx) => {
+    const events = await ctx.db
+      .query("events")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("isFeatured"), true),
+          q.eq(q.field("is_cancelled"), undefined),
+          q.gt(q.field("eventDate"), Date.now())
+        )
+      )
+      .order("asc")
+      .take(12);
+    return events;
+  },
+});

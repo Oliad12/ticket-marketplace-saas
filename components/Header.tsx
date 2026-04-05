@@ -1,89 +1,106 @@
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/images/logo.png";
-import SearchBar from "./SearchBar";
+"use client";
 
-function Header() {
+import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import Link from "next/link";
+import { Ticket, LayoutDashboard, ShieldCheck, Search, Store } from "lucide-react";
+
+export default function Header() {
+  const { user } = useUser();
+  const isAdmin = user?.publicMetadata?.role === "admin";
+
   return (
-    <div className="border-b">
-      <div className="flex flex-col lg:flex-row items-center gap-4 p-4">
-        <div className="flex items-center justify-between w-full lg:w-auto">
-          <Link href="/" className="font-bold shrink-0">
-            <Image
-              src={logo}
-              alt="logo"
-              width={100}
-              height={100}
-              className="w-24 lg:w-28"
-            />
+    <header className="bg-[#026CDF] text-white sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-3 h-14">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <div className="bg-white p-1.5 rounded">
+              <Ticket className="w-4 h-4 text-[#026CDF]" />
+            </div>
+            <span className="font-extrabold text-lg tracking-tight hidden sm:block">
+              Ticketr
+            </span>
           </Link>
 
-          <div className="lg:hidden">
+          <div className="flex-1" />
+
+          <div className="flex items-center gap-1">
+            {/* Search icon — always visible */}
+            <Link
+              href="/search"
+              className="p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              title="Search events"
+            >
+              <Search className="w-5 h-5" />
+            </Link>
+
             <SignedIn>
-              <UserButton />
+              {/* Desktop nav links */}
+              <Link
+                href="/dashboard"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                My Tickets
+              </Link>
+              <Link
+                href="/seller/dashboard"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
+              >
+                <Store className="w-4 h-4" />
+                Sell Tickets
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  Admin
+                </Link>
+              )}
+
+              {/* Profile — with mobile menu items injected */}
+              <div className="ml-1">
+                <UserButton
+                  appearance={{ elements: { avatarBox: "w-8 h-8" } }}
+                >
+                  <UserButton.MenuItems>
+                    {/* Mobile-only links shown inside profile dropdown */}
+                    <UserButton.Link
+                      label="My Tickets"
+                      labelIcon={<LayoutDashboard size={16} />}
+                      href="/dashboard"
+                    />
+                    <UserButton.Link
+                      label="Sell Tickets"
+                      labelIcon={<Store size={16} />}
+                      href="/seller/dashboard"
+                    />
+                    {isAdmin && (
+                      <UserButton.Link
+                        label="Admin Dashboard"
+                        labelIcon={<ShieldCheck size={16} />}
+                        href="/admin"
+                      />
+                    )}
+                    <UserButton.Action label="manageAccount" />
+                    <UserButton.Action label="signOut" />
+                  </UserButton.MenuItems>
+                </UserButton>
+              </div>
             </SignedIn>
+
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="bg-gray-100 text-gray-800 px-3 py-1.5 text-sm rounded-lg hover:bg-gray-200 transition border border-gray-300">
+                <button className="bg-white text-[#026CDF] font-semibold px-4 py-1.5 rounded-lg text-sm hover:bg-blue-50 transition-colors">
                   Sign In
                 </button>
               </SignInButton>
             </SignedOut>
           </div>
         </div>
-
-        {/* Search Bar - Full width on mobile */}
-        <div className="w-full lg:max-w-2xl">
-          <SearchBar />
-        </div>
-
-        <div className="hidden lg:block ml-auto">
-          <SignedIn>
-            <div className="flex items-center gap-3">
-              <Link href="/seller">
-                <button className="bg-blue-600 text-white px-3 py-1.5 text-sm rounded-lg hover:bg-blue-700 transition">
-                  Sell Tickets
-                </button>
-              </Link>
-
-              <Link href="/tickets">
-                <button className="bg-gray-100 text-gray-800 px-3 py-1.5 text-sm rounded-lg hover:bg-gray-200 transition border border-gray-300">
-                  My Tickets
-                </button>
-              </Link>
-              <UserButton />
-            </div>
-          </SignedIn>
-
-          <SignedOut>
-            <SignInButton mode="modal">
-              <button className="bg-gray-100 text-gray-800 px-3 py-1.5 text-sm rounded-lg hover:bg-gray-200 transition border border-gray-300">
-                Sign In
-              </button>
-            </SignInButton>
-          </SignedOut>
-        </div>
-
-        {/* Mobile Action Buttons */}
-        <div className="lg:hidden w-full flex justify-center gap-3">
-          <SignedIn>
-            <Link href="/seller" className="flex-1">
-              <button className="w-full bg-blue-600 text-white px-3 py-1.5 text-sm rounded-lg hover:bg-blue-700 transition">
-                Sell Tickets
-              </button>
-            </Link>
-
-            <Link href="/tickets" className="flex-1">
-              <button className="w-full bg-gray-100 text-gray-800 px-3 py-1.5 text-sm rounded-lg hover:bg-gray-200 transition border border-gray-300">
-                My Tickets
-              </button>
-            </Link>
-          </SignedIn>
-        </div>
       </div>
-    </div>
+    </header>
   );
 }
-
-export default Header;
