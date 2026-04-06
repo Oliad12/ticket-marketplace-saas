@@ -60,7 +60,6 @@ export default function Header() {
                 </Link>
               )}
 
-              {/* ── LARGE SCREENS: UserButton without extra menu items ── */}
               <div className="ml-1 hidden lg:block">
                 <UserButton
                   appearance={{ elements: { avatarBox: "w-9 h-9" } }}

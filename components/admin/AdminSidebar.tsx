@@ -5,13 +5,14 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, Users, Ticket,
   CreditCard, RefreshCw, ShieldCheck, AlertTriangle,
-  ChevronLeft, ChevronRight, X,
+  ChevronLeft, ChevronRight, X, BarChart2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./SidebarContext";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "Analytics", href: "/admin/analytics", icon: BarChart2 },
   { label: "Events", href: "/admin/events", icon: CalendarDays },
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Tickets", href: "/admin/tickets", icon: Ticket },

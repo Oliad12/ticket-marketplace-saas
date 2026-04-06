@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
-// v2
+
 
 function todayStart() {
   const d = new Date();
@@ -320,5 +320,88 @@ export const getBuyerPaymentHistory = query({
         chapaTransactionRef: t.chapaTransactionRef,
       }))
       .sort((a, b) => b.purchasedAt - a.purchasedAt);
+  },
+});
+
+/** Time-series analytics: daily revenue, ticket sales, user registrations, resales, and payment breakdown */
+export const getTimeSeriesAnalytics = query({
+  args: { days: v.optional(v.number()) },
+  handler: async (ctx, { days = 30 }) => {
+    const now = Date.now();
+    const msPerDay = 86_400_000;
+    const start = now - days * msPerDay;
+
+    const [tickets, users, resale] = await Promise.all([
+      ctx.db.query("tickets").collect(),
+      ctx.db.query("users").collect(),
+      ctx.db.query("resaleListings").collect(),
+    ]);
+
+    type DayEntry = {
+      date: string;
+      revenue: number;
+      ticketsSold: number;
+      newUsers: number;
+      resales: number;
+      stripeRevenue: number;
+      chapaRevenue: number;
+      newSubscribers: number;   
+      recurringSubscribers: number; 
+    };
+
+    const dayMap = new Map<string, DayEntry>();
+    for (let i = 0; i < days; i++) {
+      const d = new Date(start + i * msPerDay);
+      const key = d.toISOString().slice(0, 10);
+      dayMap.set(key, {
+        date: key, revenue: 0, ticketsSold: 0, newUsers: 0,
+        resales: 0, stripeRevenue: 0, chapaRevenue: 0,
+        newSubscribers: 0, recurringSubscribers: 0,
+      });
+    }
+
+    const firstPurchase = new Map<string, number>();
+    const sortedTickets = [...tickets].sort((a, b) => a.purchasedAt - b.purchasedAt);
+    for (const t of sortedTickets) {
+      if (!firstPurchase.has(t.userId)) firstPurchase.set(t.userId, t.purchasedAt);
+    }
+
+   
+    for (const t of tickets) {
+      if (t.purchasedAt < start) continue;
+      const key = new Date(t.purchasedAt).toISOString().slice(0, 10);
+      const entry = dayMap.get(key);
+      if (!entry) continue;
+      if (t.status === "valid" || t.status === "used") {
+        entry.revenue += t.amount ?? 0;
+        entry.ticketsSold += 1;
+        if (t.paymentProvider === "stripe") entry.stripeRevenue += t.amount ?? 0;
+        else if (t.paymentProvider === "chapa") entry.chapaRevenue += t.amount ?? 0;
+        // New vs recurring
+        const isNew = firstPurchase.get(t.userId) === t.purchasedAt;
+        if (isNew) entry.newSubscribers += 1;
+        else entry.recurringSubscribers += 1;
+      }
+    }
+
+    // Aggregate user registrations
+    for (const u of users) {
+      if (u._creationTime < start) continue;
+      const key = new Date(u._creationTime).toISOString().slice(0, 10);
+      const entry = dayMap.get(key);
+      if (!entry) continue;
+      entry.newUsers += 1;
+    }
+
+    // Aggregate resale listings
+    for (const r of resale) {
+      if (r.listedAt < start) continue;
+      const key = new Date(r.listedAt).toISOString().slice(0, 10);
+      const entry = dayMap.get(key);
+      if (!entry) continue;
+      entry.resales += 1;
+    }
+
+    return Array.from(dayMap.values());
   },
 });
