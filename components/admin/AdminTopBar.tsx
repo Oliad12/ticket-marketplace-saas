@@ -1,21 +1,31 @@
 "use client";
 
 import { UserButton, useUser } from "@clerk/nextjs";
-import { Bell, ArrowLeft, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Bell, ArrowLeft, PanelLeftClose, PanelLeftOpen, Menu } from "lucide-react";
 import Link from "next/link";
 import { useSidebar } from "./SidebarContext";
 
 export default function AdminTopBar() {
   const { user } = useUser();
-  const { collapsed, toggle } = useSidebar();
+  const { collapsed, toggle, openMobile } = useSidebar();
 
   return (
     <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 flex-shrink-0">
       {/* Left */}
       <div className="flex items-center gap-3">
+        {/* Mobile: hamburger */}
+        <button
+          onClick={openMobile}
+          className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          title="Open menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Desktop: collapse toggle */}
         <button
           onClick={toggle}
-          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="hidden lg:flex p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed
@@ -23,7 +33,10 @@ export default function AdminTopBar() {
             : <PanelLeftClose className="w-4 h-4" />
           }
         </button>
-        <span className="text-sm font-semibold text-gray-700 hidden sm:block">Admin Dashboard</span>
+
+        <span className="text-sm font-semibold text-gray-700 hidden sm:block">
+          Admin Dashboard
+        </span>
       </div>
 
       {/* Right */}
@@ -41,9 +54,10 @@ export default function AdminTopBar() {
 
         <Link
           href="/"
-          className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
         >
-          <ArrowLeft className="w-3 h-3" /> Back to site
+          <ArrowLeft className="w-3 h-3" />
+          <span className="hidden sm:inline">Back to site</span>
         </Link>
       </div>
     </header>

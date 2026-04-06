@@ -35,7 +35,7 @@ export default function Header() {
             </Link>
 
             <SignedIn>
-              {/* Desktop nav links */}
+              {/* ── LARGE SCREENS: nav links in header ── */}
               <Link
                 href="/dashboard"
                 className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
@@ -60,13 +60,19 @@ export default function Header() {
                 </Link>
               )}
 
-              {/* Profile — with mobile menu items injected */}
-              <div className="ml-1">
+              {/* ── LARGE SCREENS: UserButton without extra menu items ── */}
+              <div className="ml-1 hidden lg:block">
+                <UserButton
+                  appearance={{ elements: { avatarBox: "w-9 h-9" } }}
+                />
+              </div>
+
+              {/* ── SMALL SCREENS: UserButton WITH menu items ── */}
+              <div className="ml-1 lg:hidden">
                 <UserButton
                   appearance={{ elements: { avatarBox: "w-8 h-8" } }}
                 >
                   <UserButton.MenuItems>
-                    {/* Mobile-only links shown inside profile dropdown */}
                     <UserButton.Link
                       label="My Tickets"
                       labelIcon={<LayoutDashboard size={16} />}
